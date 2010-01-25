@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+                width="800" height="730" backgroundColor="#FFFFFF" xmlns="*"
+                initialize="addChild(computer);">
+
+    <mx:Style>
+        TextArea {
+            font-family: "Lucida Console", "_typewriter";
+            font-size: 12;
+        }
+    </mx:Style>
+
+    <mx:ApplicationControlBar dock="true" width="100%">
+        <mx:VBox id="fraSettings" width="100%">
+            <mx:VBox borderStyle="solid" borderThickness="1" paddingBottom="4"
+                     paddingTop="4" paddingLeft="4" paddingRight="4" width="100%">
+
+                <mx:Script>
+                <![CDATA[
+                        [Bindable]
+                        public var programs:Array = [
+                                {label:"Add 2 numbers",
+                                 data:
+"//  Program to add two numbers\n" +
+"//  ---------------------------------------------------------------\n"+
+"    ORG 0   // Origin of program is location 0 \n"+
+"    LDA A   // Load  operand from location A \n"+
+"    ADD B   // Add  operand from location B \n"+
+"    STA C   // Store sum in location C \n"+
+"    HLT     // Halt computer \n"+
+"A:  DEC 83  // Decimal operand A \n"+
+"B:  DEC -23 // Decimal operand B \n"+
+"C:  HEX 0   // Sum would be stored in this position C \n" +
+"            // 83 + (-23) = 60 = 0x003C = 0000 0000 0011 1100 \n"+
+"    END     // End of symbolic program \n"
+                                },
+                                {label:"Subtract 2 numbers",
+                                 data:
+"//  Program to subtract two numbers\n"+
+"//  ---------------------------------------------------------------\n"+
+"        ORG 100 // Origin of program is location 0x100 \n"+
+"        LDA SUB // Load subtrahend to AC \n"+
+"        CMA     // Complement AC \n"+
+"        INC     // Increment AC \n"+
+"        ADD MIN // Add minuend to AC \n"+
+"        STA DIF // Store difference in DIF \n"+
+"        HLT     // Halt computer \n"+
+"MIN:    DEC 83  // Minuend \n"+
+"SUB:    DEC -23 // Subtrahend \n"+
+"DIF:    HEX 0   // Difference is stored here \n"+
+"                // 83 - (-23) = 106 = 0x006A = 0000 0000 0110 1010 \n"+
+"        END     // End of symbolic program \n"
+                                },
+                                {label:"Add 16 numbers stored in memory",
+                                 data:
+"//  Program to add 16 numbers (using a loop)\n"+
+"//  ---------------------------------------------------------------\n"+
+"        ORG 100     // Origin of program is HEX 100 \n"+
+"        LDA DATA    // Load first address of operand \n"+
+"        STA PTR     // Store in pointer \n"+
+"        LDA NUM_S   // Load negative value of number of operands \n"+
+"        STA COUNT   // Store in counter \n"+
+"        CLA         // Clear AC \n"+
+"LOOP:   ADD PTR I   // Add an operand to AC (Indirect mode) \n"+
+"        ISZ PTR     // Increment pointer \n"+
+"        ISZ COUNT   // Increment counter \n"+
+"        BUN LOOP    // Repeat loop again \n"+
+"        STA SUM     // Store sum \n"+
+"        HLT         // Halt computer \n" +
+"SUM:    HEX 0       // Sum is stored here \n"+
+"                    // (0x10 + 0x20 + ... + 0xF0 + 0x100) = 0x880 \n"+
+"DATA:   LBL FIRST   // First address of operands \n"+
+"PTR:    HEX 0       // Reserved for a pointer \n"+
+"NUM_S:  DEC -16     // Initial value for the counter (negative value) \n"+
+"COUNT:  HEX 0       // Reserved for a counter \n"+
+"        // DATA SECTION \n"+
+"        // --------------------------------------------------------\n"+
+"FIRST:  HEX 10      // First operand \n"+
+"        HEX 20 \n"+
+"        HEX 30 \n"+
+"        HEX 40 \n"+
+"        HEX 50 \n"+
+"        HEX 60 \n"+
+"        HEX 70 \n"+
+"        HEX 80 \n"+
+"        HEX 90 \n"+
+"        HEX A0 \n"+
+"        HEX B0 \n"+
+"        HEX C0 \n"+
+"        HEX D0 \n"+
+"        HEX E0 \n"+
+"        HEX F0 \n"+
+"        HEX 100     // Last operand \n"+
+"        END         // End of symbolic program \n"
+                                }
+                            ];
+                        [Bindable]
+                        public var selectedProgram:String = programs[0].data;
+                ]]>
+                </mx:Script>
+
+                <mx:HBox width="100%">
+                    <mx:Label text="Program " />
+                    <mx:Button id="btnAssemble" x="15" y="5" click="computer.assemble(txtProgram.text);" label="Assemble" />
+                    <mx:Button id="btnLoad" x="15" y="5" click="computer.load();" label="Load" />
+                    <mx:Button id="btnRun" x="195" y="5" click="computer.run();" label="Run" />
+                    <mx:Button id="btnNext" x="295" y="5" click="computer.nextInstruction();" label="Next" />
+                    <mx:Label text="Select example: " />
+                    <mx:ComboBox id="cmbPrograms" width="75%" dataProvider="{programs}"
+                                 close="selectedProgram = ComboBox(event.target).selectedItem.data" />
+                    </mx:HBox>
+                <mx:HBox width="100%">
+                    <mx:TextArea id="txtProgram" x="15" y="5" width="80%" height="270" text="{selectedProgram}" />
+                    <mx:TextArea id="txtLabels" x="500" y="5" width="20%" height="270" editable="false" />
+                </mx:HBox>
+            </mx:VBox>
+
+            <mx:HBox width="100%">
+                <mx:HBox borderStyle="solid" borderThickness="1" paddingBottom="4"
+                         paddingTop="4" paddingLeft="4" paddingRight="4">
+                    <mx:Label text="Description: " />
+                    <mx:TextArea id="txtDescription" x="15" y="5" width="150" height="20" editable="false" color="0x0000FF" />
+                </mx:HBox>
+
+                <mx:HBox borderStyle="solid" borderThickness="1" paddingBottom="4"
+                         paddingTop="4" paddingLeft="4" paddingRight="4">
+                    <mx:Label text="Cycles: " />
+                    <mx:TextArea id="txtCycles" x="15" y="5" width="75" height="20" editable="false" color="0xFF0000" />
+                </mx:HBox>
+
+                <mx:HBox borderStyle="solid" borderThickness="1" paddingBottom="4"
+                         paddingTop="4" paddingLeft="4" paddingRight="4" width="100%">
+                    <mx:Label text="Set INPR: " />
+                    <mx:TextArea id="txtInpr" x="15" y="5" width="50" height="20" />
+                    <mx:Button id="btnSetInpr" x="195" y="5" click="computer.setInpr(txtInpr.text);" label="Set" />
+                    <mx:Button id="btnSetFgo" x="195" y="5" click="computer.setFgo();" label="Set FGO" />
+                    <mx:Button id="btnSetFgi" x="195" y="5" click="computer.setFgi();" label="Set FGI" />
+                </mx:HBox>
+            </mx:HBox>
+
+            <mx:HBox width="100%">
+
+                <mx:HBox borderStyle="solid" borderThickness="1" paddingBottom="4"
+                         paddingTop="4" paddingLeft="4" paddingRight="4" width="600">
+                    <mx:Label id="lblMessage" text="Ready" />
+                </mx:HBox>
+
+                <mx:HBox borderStyle="solid" borderThickness="1" paddingBottom="4"
+                         paddingTop="4" paddingLeft="4" paddingRight="4">
+                    <mx:Label text="Memory: " />
+                    <mx:TextArea id="txtMemory" x="15" y="5" width="50" height="20" />
+                    <mx:Button id="btnMemory" x="195" y="5" click="computer.setMemoryUpperAddress(txtMemory.text);" label="Go" />
+                </mx:HBox>
+            </mx:HBox>
+        </mx:VBox>
+    </mx:ApplicationControlBar>
+
+    <mx:Canvas width="100%" height="100%" x="0" y="0" backgroundColor="#FFFFFF">
+        <mx:Script>
+            <![CDATA[
+            import com.ex.comp.Computer;
+
+            public var computer:Computer = new Computer(this);
+
+            public function showMessage(msg:String):void {
+                lblMessage.text = msg;
+            }
+            public function setMemoryUpperAddress(address:String):void {
+                txtMemory.text = address;
+            }
+            public function setAdressList(list:String):void {
+                txtLabels.text = list;
+            }
+            public function setDescription(description:String):void {
+                txtDescription.text = description;
+            }
+            public function setCycles(cycles:String):void {
+                txtCycles.text = cycles;
+            }
+            ]]>
+        </mx:Script>
+    </mx:Canvas>
+
+</mx:Application>
+
