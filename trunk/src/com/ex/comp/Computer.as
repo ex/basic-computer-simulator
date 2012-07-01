@@ -74,7 +74,7 @@ public class Computer extends UIComponent {
         mINPR = new Register(this, "INPR", 8, 150, 255, 0xffccaa, 50);
         mOUTR = new Register(this, "OUTR", 8, 150, 295, 0xffbbaa, 50);
 
-        // Create secuence conunter SC.
+        // Create secuence counter SC.
         mSC = new Register(this, "SC", 3, 30, 15, 0xaaee88, 24, 8);
 
         // Create computer flip-flops.

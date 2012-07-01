@@ -99,7 +99,7 @@ public class Assembler {
         // Split in lines, converting tabs to spaces.
         var lines:Array = program.replace(/\t/g, " ").split("\r");
 
-        // Strip commmentaries.
+        // Strip commentaries.
         for (var k:int = 0; k < lines.length; ++k) {
             var line:String = lines[k];
             if (line.indexOf(TOKEN_COMMENT) >= 0) {
