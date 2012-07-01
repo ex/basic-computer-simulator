@@ -1,11 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
-                width="800" height="730" backgroundColor="#FFFFFF" xmlns="*"
+                width="800" height="730" backgroundColor="#FFFFFF"
                 initialize="addChild(computer);">
 
     <mx:Style>
+        @namespace "http://www.adobe.com/2006/mxml";
         TextArea {
-            font-family: "Lucida Console", "_typewriter";
+            font-family: "Lucida Console Ex", "Lucida Console", "_typewriter";
             font-size: 12;
         }
     </mx:Style>
@@ -108,7 +109,7 @@
                     <mx:Label text="Select example: " />
                     <mx:ComboBox id="cmbPrograms" width="75%" dataProvider="{programs}"
                                  close="selectedProgram = ComboBox(event.target).selectedItem.data" />
-                    </mx:HBox>
+                </mx:HBox>
                 <mx:HBox width="100%">
                     <mx:TextArea id="txtProgram" x="15" y="5" width="80%" height="270" text="{selectedProgram}" />
                     <mx:TextArea id="txtLabels" x="500" y="5" width="20%" height="270" editable="false" />
